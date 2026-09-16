@@ -21,7 +21,7 @@ from datasets import load_from_disk
 
 def load_model_and_tokenizer(model_name='Langboat/bloom-389m-zh'):
     """載入模型和 tokenizer"""
-    print(f"📦 載入模型: {model_name}")
+    print(f"[LOAD] 載入模型: {model_name}")
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(
@@ -38,7 +38,7 @@ def load_model_and_tokenizer(model_name='Langboat/bloom-389m-zh'):
         tokenizer.pad_token = tokenizer.eos_token
         model.config.pad_token_id = model.config.eos_token_id
 
-    print(f"✅ 模型載入完成")
+    print(f"[OK] 模型載入完成")
     print(f"   參數量: {model.num_parameters():,}")
 
     return model, tokenizer
@@ -46,16 +46,16 @@ def load_model_and_tokenizer(model_name='Langboat/bloom-389m-zh'):
 
 def load_processed_dataset(data_dir='data/processed'):
     """載入已處理的資料集"""
-    print(f"📁 載入資料集: {data_dir}")
+    print(f"[DIR] 載入資料集: {data_dir}")
 
     try:
         dataset = load_from_disk(data_dir)
-        print(f"✅ 資料集載入完成")
+        print(f"[OK] 資料集載入完成")
         print(f"   訓練樣本: {len(dataset['train'])}")
         print(f"   驗證樣本: {len(dataset['val'])}")
         return dataset
     except Exception as e:
-        print(f"❌ 資料集載入失敗: {e}")
+        print(f"[ERROR] 資料集載入失敗: {e}")
         print(f"請先執行資料前處理: python preprocess.py")
         return None
 
@@ -70,7 +70,7 @@ def train(
     max_steps=-1
 ):
     """訓練模型"""
-    print("🚀 開始訓練...")
+    print("[START] 開始訓練...")
 
     # 載入模型和 tokenizer
     model, tokenizer = load_model_and_tokenizer(model_name)
@@ -125,12 +125,12 @@ def train(
     train_result = trainer.train()
 
     # 儲存模型
-    print(f"💾 儲存模型至 {output_dir}")
+    print(f"[SAVE] 儲存模型至 {output_dir}")
     trainer.save_model(output_dir)
     tokenizer.save_pretrained(output_dir)
 
     # 顯示結果
-    print(f"\n✅ 訓練完成！")
+    print(f"\n[OK] 訓練完成！")
     print(f"   最終 Loss: {train_result.training_loss:.4f}")
     print(f"   訓練時間: {train_result.metrics['train_runtime']:.2f} 秒")
 
@@ -169,7 +169,7 @@ def main():
         max_steps=args.max_steps
     )
 
-    print("🎉 完成！")
+    print("[DONE] 完成！")
 
 
 if __name__ == '__main__':
